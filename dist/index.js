@@ -47,9 +47,9 @@ function docxToPdfAxios(docx) {
         let options = { responseType: 'json' };
         if (browser_or_node_1.isNode)
             options.headers = formData.getHeaders();
-        let uploadData = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=upload', formData, options)).data;
+        let files = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=upload', formData, options)).data;
         delete options.headers;
-        let convertData = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=convertToPdf', { files: [uploadData] }, options)).data;
+        let convertData = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=convertToPdf', { files }, options)).data;
         options.params = convertData;
         let jobStatusData = (yield axios_1.default.get('https://filetools2.pdf24.org/client.php?action=getStatus', options)).data;
         while (jobStatusData.status !== 'done') {

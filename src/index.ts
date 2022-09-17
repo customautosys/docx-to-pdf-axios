@@ -40,7 +40,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer):Promise<ArrayBuff
 	(formData as any).append('file',docx,'output.docx');
 	let options:AxiosRequestConfig={responseType:'json'};
 	if(isNode)options.headers=(formData as any).getHeaders();
-	let uploadData=(await axios.post<{
+	let files=(await axios.post<{
 		file:string,
 		size:number,
 		name:string,
@@ -56,7 +56,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer):Promise<ArrayBuff
 		jobId:string
 	}>(
 		'https://filetools2.pdf24.org/client.php?action=convertToPdf',
-		{files:[uploadData]},
+		{files},
 		options
 	)).data;
 	options.params=convertData;
