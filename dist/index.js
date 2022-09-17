@@ -43,16 +43,26 @@ function docxToPdfAxios(docx) {
         if (browser_or_node_1.isNode)
             NodeFormData = (yield Promise.resolve().then(() => __importStar(require('form-data')))).default;
         let formData = new (browser_or_node_1.isNode ? NodeFormData : FormData)();
-        formData.append('__EVENTTARGET', '');
-        formData.append('__EVENTARGUMENT', '');
-        formData.append('__VIEWSTATE', '');
-        formData.append('ctl00$MainContent$fu', docx, 'output.docx');
-        formData.append('ctl00$MainContent$btnConvert', 'Convert');
-        formData.append('ctl00$MainContent$fuZip', '');
-        let options = { responseType: 'arraybuffer' };
+        formData.append('file', docx, 'output.docx');
+        let options = { responseType: 'json' };
         if (browser_or_node_1.isNode)
             options.headers = formData.getHeaders();
-        return axios_1.default.post('http://mirror1.convertonlinefree.com', formData, options);
+        let uploadData = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=upload', formData, options)).data;
+        delete options.headers;
+        let convertData = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=convertToPdf', { files: [uploadData] }, options)).data;
+        options.params = convertData;
+        let jobStatusData = (yield axios_1.default.get('https://filetools2.pdf24.org/client.php?action=getStatus', options)).data;
+        while (jobStatusData.status !== 'done') {
+            try {
+                yield new Promise(resolve => setTimeout(resolve, 2000));
+                jobStatusData = (yield axios_1.default.get('https://filetools2.pdf24.org/client.php?action=getStatus', options)).data;
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+        options.responseType = 'arraybuffer';
+        return (yield axios_1.default.get('https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult', options)).data;
     });
 }
 exports.default = docxToPdfAxios;

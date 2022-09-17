@@ -1,6 +1,6 @@
 # docx-to-pdf-axios
 
-Convert docx files to pdf using http://convertonlinefree.com. Convert docx files to pdf using http://convertonlinefree.com. This fork uses axios so it is compatible with both the browser and node.
+Convert docx files to pdf using https://tools.pdf24.org. This fork uses axios so it is compatible with both the browser and node.
 
 ## Copyright Notice
 
@@ -26,7 +26,7 @@ import docxToPdfAxios from 'docx-to-pdf-axios';
 ## Functions
 
 ```typescript
-docxToPdfAxios(docx:Blob|Buffer):Promise<AxiosResponse<ArrayBuffer>>
+docxToPdfAxios(docx:Blob|Buffer):Promise<ArrayBuffer>
 ```
 
 Converts a docx Blob (browser) or Buffer (node) to a PDF ArrayBuffer.
