@@ -45,7 +45,7 @@ function docxToPdfAxios(docx) {
         let formData = new (browser_or_node_1.isNode ? NodeFormData : FormData)();
         formData.append('file', docx, 'output.docx');
         let options = { responseType: 'json' };
-        if (browser_or_node_1.isNode)
+        if (browser_or_node_1.isNode && typeof formData.getHeaders === 'function')
             options.headers = formData.getHeaders();
         let files = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=upload', formData, options)).data;
         delete options.headers;
