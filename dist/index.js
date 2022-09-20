@@ -50,7 +50,7 @@ function docxToPdfAxios(docx) {
         formData.append('ctl00$MainContent$btnConvert', 'Convert');
         formData.append('ctl00$MainContent$fuZip', '');
         let options = { responseType: 'arraybuffer' };
-        if (browser_or_node_1.isNode)
+        if (browser_or_node_1.isNode && formData.getHeaders)
             options.headers = formData.getHeaders();
         return axios_1.default.post('http://mirror1.convertonlinefree.com', formData, options);
     });

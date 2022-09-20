@@ -15,7 +15,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer):Promise<AxiosResp
 	formData.append('ctl00$MainContent$btnConvert', 'Convert');
 	formData.append('ctl00$MainContent$fuZip', '');
 	let options:AxiosRequestConfig={responseType:'arraybuffer'};
-	if(isNode)options.headers=(formData as any).getHeaders();
+	if(isNode&&typeof (formData as any).getHeaders==='function')options.headers=(formData as any).getHeaders();
 	return axios.post<ArrayBuffer>(
 		'http://mirror1.convertonlinefree.com',
 		formData,
