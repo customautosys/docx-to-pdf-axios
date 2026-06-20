@@ -39,7 +39,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 	let formData=new(isNode&&NodeFormData?NodeFormData:FormData)();
 	(formData as any).append('file',docx,'output.docx');
 	let options:AxiosRequestConfig={responseType:'json'};
-	if(isNode)options.headers=(formData as any).getHeaders();
+	if(isNode&&typeof (formData as any).getHeaders==='function')options.headers=(formData as any).getHeaders();
 	let corsPrefixString=(String(corsPrefix).includes('://')?(corsPrefix+(String(corsPrefix).endsWith('/')?'':'/')):'');
 	let files=(await axios.post<{
 		file:string,
