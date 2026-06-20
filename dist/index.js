@@ -37,32 +37,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const browser_or_node_1 = require("browser-or-node");
 const axios_1 = __importDefault(require("axios"));
-function docxToPdfAxios(docx) {
+function docxToPdfAxios(docx, corsPrefix = '') {
     return __awaiter(this, void 0, void 0, function* () {
         let NodeFormData;
         if (browser_or_node_1.isNode)
             NodeFormData = (yield Promise.resolve().then(() => __importStar(require('form-data')))).default;
-        let formData = new (browser_or_node_1.isNode ? NodeFormData : FormData)();
+        let formData = new (browser_or_node_1.isNode && NodeFormData ? NodeFormData : FormData)();
         formData.append('file', docx, 'output.docx');
         let options = { responseType: 'json' };
         if (browser_or_node_1.isNode)
             options.headers = formData.getHeaders();
-        let files = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=upload', formData, options)).data;
+        let corsPrefixString = (String(corsPrefix).includes('://') ? (corsPrefix + (String(corsPrefix).endsWith('/') ? '' : '/')) : '');
+        let files = (yield axios_1.default.post(corsPrefixString + 'https://filetools2.pdf24.org/client.php?action=upload', formData, options)).data;
         delete options.headers;
-        let convertData = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=convertToPdf', { files }, options)).data;
+        let convertData = (yield axios_1.default.post(corsPrefixString + 'https://filetools2.pdf24.org/client.php?action=convertToPdf', { files }, options)).data;
         options.params = convertData;
-        let jobStatusData = (yield axios_1.default.get('https://filetools2.pdf24.org/client.php?action=getStatus', options)).data;
+        let jobStatusData = (yield axios_1.default.get(corsPrefixString + 'https://filetools2.pdf24.org/client.php?action=getStatus', options)).data;
         while (jobStatusData.status !== 'done') {
             try {
                 yield new Promise(resolve => setTimeout(resolve, 2000));
-                jobStatusData = (yield axios_1.default.get('https://filetools2.pdf24.org/client.php?action=getStatus', options)).data;
+                jobStatusData = (yield axios_1.default.get(corsPrefixString + 'https://filetools2.pdf24.org/client.php?action=getStatus', options)).data;
             }
             catch (error) {
                 console.log(error);
             }
         }
         options.responseType = 'arraybuffer';
-        return (yield axios_1.default.get('https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult', options)).data;
+        return (yield axios_1.default.get(corsPrefixString + 'https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult', options)).data;
     });
 }
 exports.default = docxToPdfAxios;
