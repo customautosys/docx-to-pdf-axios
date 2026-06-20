@@ -40,7 +40,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 	(formData as any).append('file',docx,'output.docx');
 	let options:AxiosRequestConfig={responseType:'json'};
 	if(isNode&&typeof (formData as any).getHeaders==='function')options.headers=(formData as any).getHeaders();
-	let corsPrefixString=(String(corsPrefix).includes('://')?(corsPrefix+(String(corsPrefix).endsWith('/')?'':'/')):'');
+	//let corsPrefixString=(String(corsPrefix).includes('://')?(corsPrefix+(String(corsPrefix).endsWith('/')?'':'/')):'');
 	let files=(await axios.post<{
 		file:string,
 		size:number,
@@ -48,7 +48,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 		ctime:string,
 		host:string
 	}>(
-		'https://filetools2.pdf24.org/client.php?action=upload',
+		'https://filetools21.pdf24.org/client.php?action=upload',
 		formData,
 		options
 	)).data;
@@ -56,20 +56,21 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 	let convertData=(await axios.post<{
 		jobId:string
 	}>(
-		'https://filetools2.pdf24.org/client.php?action=convertToPdf',
+		'https://filetools21.pdf24.org/client.php?action=convertToPdf',
 		{files},
 		options
 	)).data;
-	options.params=convertData;
-	let jobStatusData:JobStatusData=(await axios.get<JobStatusData>(
-		corsPrefixString+'https://filetools2.pdf24.org/client.php?action=getStatus',
+	let jobStatusData:JobStatusData=(await axios.post<JobStatusData>(
+		'https://filetools21.pdf24.org/client.php?action=getStatus',
+		convertData,
 		options
 	)).data;
 	while(jobStatusData.status!=='done'){
 		try{
 			await new Promise<void>(resolve=>setTimeout(resolve,2000));
-			jobStatusData=(await axios.get<JobStatusData>(
-				corsPrefixString+'https://filetools2.pdf24.org/client.php?action=getStatus',
+			jobStatusData=(await axios.post<JobStatusData>(
+				'https://filetools21.pdf24.org/client.php?action=getStatus',
+				convertData,
 				options
 			)).data;
 		}catch(error){
@@ -77,8 +78,9 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 		}
 	}
 	options.responseType='arraybuffer';
+	options.params=convertData;
 	return (await axios.get<ArrayBuffer>(
-		'https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult',
+		'https://filetools21.pdf24.org/client.php?mode=download&action=downloadJobResult',
 		options
 	)).data;
 };
