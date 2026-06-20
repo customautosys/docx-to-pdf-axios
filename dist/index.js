@@ -51,11 +51,13 @@ function docxToPdfAxios(docx, corsPrefix = '') {
         let files = (yield axios_1.default.post('https://filetools21.pdf24.org/client.php?action=upload', formData, options)).data;
         delete options.headers;
         let convertData = (yield axios_1.default.post('https://filetools21.pdf24.org/client.php?action=convertToPdf', { files }, options)).data;
-        let jobStatusData = (yield axios_1.default.post('https://filetools21.pdf24.org/client.php?action=getStatus', convertData, options)).data;
+        let jobIdFormData = new (browser_or_node_1.isNode && NodeFormData ? NodeFormData : FormData)();
+        jobIdFormData.append('jobId', convertData.jobId);
+        let jobStatusData = (yield axios_1.default.post('https://filetools21.pdf24.org/client.php?action=getStatus', jobIdFormData, options)).data;
         while (jobStatusData.status !== 'done') {
             try {
                 yield new Promise(resolve => setTimeout(resolve, 2000));
-                jobStatusData = (yield axios_1.default.post('https://filetools21.pdf24.org/client.php?action=getStatus', convertData, options)).data;
+                jobStatusData = (yield axios_1.default.post('https://filetools21.pdf24.org/client.php?action=getStatus', jobIdFormData, options)).data;
             }
             catch (error) {
                 console.log(error);

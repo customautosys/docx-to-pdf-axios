@@ -60,9 +60,11 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 		{files},
 		options
 	)).data;
+	let jobIdFormData=new(isNode&&NodeFormData?NodeFormData:FormData)();
+	jobIdFormData.append('jobId',convertData.jobId);
 	let jobStatusData:JobStatusData=(await axios.post<JobStatusData>(
 		'https://filetools21.pdf24.org/client.php?action=getStatus',
-		convertData,
+		jobIdFormData,
 		options
 	)).data;
 	while(jobStatusData.status!=='done'){
@@ -70,7 +72,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 			await new Promise<void>(resolve=>setTimeout(resolve,2000));
 			jobStatusData=(await axios.post<JobStatusData>(
 				'https://filetools21.pdf24.org/client.php?action=getStatus',
-				convertData,
+				jobIdFormData,
 				options
 			)).data;
 		}catch(error){
