@@ -40,7 +40,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 	(formData as any).append('file',docx,'output.docx');
 	let options:AxiosRequestConfig={responseType:'json'};
 	if(isNode&&typeof (formData as any).getHeaders==='function')options.headers=(formData as any).getHeaders();
-	//let corsPrefixString=(String(corsPrefix).includes('://')?(corsPrefix+(String(corsPrefix).endsWith('/')?'':'/')):'');
+	let corsPrefixString=(String(corsPrefix).includes('://')?(corsPrefix+(String(corsPrefix).endsWith('/')?'':'/')):'');
 	let files=(await axios.post<{
 		file:string,
 		size:number,
@@ -63,7 +63,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 	let jobIdFormData=new(isNode&&NodeFormData?NodeFormData:FormData)();
 	jobIdFormData.append('jobId',convertData.jobId);
 	let jobStatusData:JobStatusData=(await axios.post<JobStatusData>(
-		'https://filetools21.pdf24.org/client.php?action=getStatus',
+		corsPrefixString+'https://filetools21.pdf24.org/client.php?action=getStatus',
 		jobIdFormData,
 		options
 	)).data;
@@ -71,7 +71,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 		try{
 			await new Promise<void>(resolve=>setTimeout(resolve,2000));
 			jobStatusData=(await axios.post<JobStatusData>(
-				'https://filetools21.pdf24.org/client.php?action=getStatus',
+				corsPrefixString+'https://filetools21.pdf24.org/client.php?action=getStatus',
 				jobIdFormData,
 				options
 			)).data;
