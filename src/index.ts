@@ -48,7 +48,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 		ctime:string,
 		host:string
 	}>(
-		corsPrefixString+'https://filetools2.pdf24.org/client.php?action=upload',
+		'https://filetools2.pdf24.org/client.php?action=upload',
 		formData,
 		options
 	)).data;
@@ -56,7 +56,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 	let convertData=(await axios.post<{
 		jobId:string
 	}>(
-		corsPrefixString+'https://filetools2.pdf24.org/client.php?action=convertToPdf',
+		'https://filetools2.pdf24.org/client.php?action=convertToPdf',
 		{files},
 		options
 	)).data;
@@ -78,7 +78,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 	}
 	options.responseType='arraybuffer';
 	return (await axios.get<ArrayBuffer>(
-		corsPrefixString+'https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult',
+		'https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult',
 		options
 	)).data;
 };

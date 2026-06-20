@@ -48,9 +48,9 @@ function docxToPdfAxios(docx, corsPrefix = '') {
         if (browser_or_node_1.isNode && typeof formData.getHeaders === 'function')
             options.headers = formData.getHeaders();
         let corsPrefixString = (String(corsPrefix).includes('://') ? (corsPrefix + (String(corsPrefix).endsWith('/') ? '' : '/')) : '');
-        let files = (yield axios_1.default.post(corsPrefixString + 'https://filetools2.pdf24.org/client.php?action=upload', formData, options)).data;
+        let files = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=upload', formData, options)).data;
         delete options.headers;
-        let convertData = (yield axios_1.default.post(corsPrefixString + 'https://filetools2.pdf24.org/client.php?action=convertToPdf', { files }, options)).data;
+        let convertData = (yield axios_1.default.post('https://filetools2.pdf24.org/client.php?action=convertToPdf', { files }, options)).data;
         options.params = convertData;
         let jobStatusData = (yield axios_1.default.get(corsPrefixString + 'https://filetools2.pdf24.org/client.php?action=getStatus', options)).data;
         while (jobStatusData.status !== 'done') {
@@ -63,7 +63,7 @@ function docxToPdfAxios(docx, corsPrefix = '') {
             }
         }
         options.responseType = 'arraybuffer';
-        return (yield axios_1.default.get(corsPrefixString + 'https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult', options)).data;
+        return (yield axios_1.default.get('https://filetools2.pdf24.org/client.php?mode=download&action=downloadJobResult', options)).data;
     });
 }
 exports.default = docxToPdfAxios;
