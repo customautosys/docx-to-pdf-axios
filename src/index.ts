@@ -60,7 +60,7 @@ export default async function docxToPdfAxios(docx:Blob|Buffer,corsPrefix=''):Pro
 		{files},
 		options
 	)).data;
-	let jobIdFormData=new(isNode&&NodeFormData?NodeFormData:FormData)();
+	let jobIdFormData=new URLSearchParams();
 	jobIdFormData.append('jobId',convertData.jobId);
 	let jobStatusData:JobStatusData=(await axios.post<JobStatusData>(
 		corsPrefixString+'https://filetools21.pdf24.org/client.php?action=getStatus',
