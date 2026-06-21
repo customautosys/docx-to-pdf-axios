@@ -51,25 +51,18 @@ function docxToPdfAxios(docx, corsPrefix = '') {
         let files = (yield axios_1.default.post('https://filetools21.pdf24.org/client.php?action=upload', formData, options)).data;
         delete options.headers;
         let convertData = (yield axios_1.default.post('https://filetools21.pdf24.org/client.php?action=convertToPdf', { files }, options)).data;
-        /*let jobIdFormData=new URLSearchParams();
-        jobIdFormData.append('jobId',convertData.jobId);
-        let jobStatusData:JobStatusData=(await axios.post<JobStatusData>(
-            corsPrefixString+'https://filetools21.pdf24.org/client.php?action=getStatus',
-            jobIdFormData,
-            options
-        )).data;
-        while(jobStatusData.status!=='done'){
-            try{
-                await new Promise<void>(resolve=>setTimeout(resolve,2000));
-                jobStatusData=(await axios.post<JobStatusData>(
-                    corsPrefixString+'https://filetools21.pdf24.org/client.php?action=getStatus',
-                    jobIdFormData,
-                    options
-                )).data;
-            }catch(error){
+        let jobIdFormData = new URLSearchParams();
+        jobIdFormData.append('jobId', convertData.jobId);
+        let jobStatusData = (yield axios_1.default.post(corsPrefixString + 'https://filetools21.pdf24.org/client.php?action=getStatus', jobIdFormData, options)).data;
+        while (jobStatusData.status !== 'done') {
+            try {
+                yield new Promise(resolve => setTimeout(resolve, 2000));
+                jobStatusData = (yield axios_1.default.post(corsPrefixString + 'https://filetools21.pdf24.org/client.php?action=getStatus', jobIdFormData, options)).data;
+            }
+            catch (error) {
                 console.log(error);
             }
-        }*/
+        }
         options.responseType = 'arraybuffer';
         options.params = convertData;
         return (yield axios_1.default.get('https://filetools21.pdf24.org/client.php?mode=download&action=downloadJobResult', options)).data;
